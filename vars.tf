@@ -5,7 +5,7 @@ variable "rg" {
 
 variable "location" {
   type    = string
-  default = "westus2"
+  default = "eastus"
 }
 
 variable "vnet" {

@@ -12,6 +12,10 @@ resource "azurerm_virtual_network" "vnet" {
   address_space       = [var.vnet["address_space"]]
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
+
+  depends_on = [
+    azurerm_resource_group.rg
+  ]
 }
 
 resource "azurerm_subnet" "subnet" {
@@ -19,6 +23,10 @@ resource "azurerm_subnet" "subnet" {
   address_prefixes     = [var.subnet["address_range"]]
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
+
+  depends_on = [
+    azurerm_virtual_network.vnet
+  ]
 }
 
 resource "azurerm_network_security_group" "nsg" {
@@ -49,11 +57,20 @@ resource "azurerm_network_security_group" "nsg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+
+  depends_on = [
+    azurerm_resource_group.rg
+  ]
 }
 
 resource "azurerm_subnet_network_security_group_association" "subnet-nsg" {
   subnet_id                 = azurerm_subnet.subnet.id
   network_security_group_id = azurerm_network_security_group.nsg.id
+
+  depends_on = [
+    azurerm_virtual_network.vnet,
+    azurerm_resource_group.rg
+  ]
 }
 
 resource "azurerm_public_ip" "pip" {
@@ -61,6 +78,10 @@ resource "azurerm_public_ip" "pip" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   allocation_method   = "Static"
+
+  depends_on = [
+    azurerm_resource_group.rg
+  ]
 }
 
 resource "azurerm_network_interface" "nic" {
@@ -72,19 +93,25 @@ resource "azurerm_network_interface" "nic" {
     name                          = "ipconfig1"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.pip[count.index].id
+    public_ip_address_id          = azurerm_public_ip.pip.id
   }
+
+  depends_on = [
+    azurerm_public_ip.pip,
+    azurerm_subnet.subnet
+  ]
 }
 
 resource "azurerm_linux_virtual_machine" "vm" {
-  name                = var.vm_name
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  size                = var.vm_size
-  admin_username      = var.username
-  admin_password      = var.password
+  name                            = var.vm_name
+  resource_group_name             = azurerm_resource_group.rg.name
+  location                        = azurerm_resource_group.rg.location
+  size                            = var.vm_size
+  disable_password_authentication = false
+  admin_username                  = var.username
+  admin_password                  = var.password
   network_interface_ids = [
-    azurerm_network_interface.nic[count.index].id,
+    azurerm_network_interface.nic.id,
   ]
 
   os_disk {
@@ -98,4 +125,8 @@ resource "azurerm_linux_virtual_machine" "vm" {
     sku       = var.sku
     version   = "latest"
   }
+
+  depends_on = [
+    azurerm_network_interface.nic
+  ]
 }
