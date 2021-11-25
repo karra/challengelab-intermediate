@@ -12,7 +12,11 @@ pool:
 stages:
 - stage: installTF
   displayName: Install latest version of Terraform
-  steps:
-  - task: TerraformInstaller@0
-    inputs:
-      terraformVersion: 'latest'
+  jobs:
+  - job: installTF
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: TerraformInstaller@0
+      inputs:
+        terraformVersion: 'latest'
