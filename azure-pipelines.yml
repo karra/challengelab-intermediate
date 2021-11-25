@@ -9,31 +9,26 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-stages:
-- stage: installTF
-  displayName: Install latest version of Terraform
-  jobs:
-  - job: installTF
-    steps:
-    - task: TerraformInstaller@0
-      inputs:
-        terraformVersion: 'latest'
-    - task: TerraformTaskV2@2
-      inputs:
-        provider: 'azurerm'
-        command: 'init'
-        backendServiceArm: 'Azure Pass - Sponsorship(90a5d9e6-2339-480b-a3c4-8cfb8440db35)'
-        backendAzureRmResourceGroupName: 'cloud-shell-storage-centralindia'
-        backendAzureRmStorageAccountName: 'csg10032000c8336f24'
-        backendAzureRmContainerName: 'tff'
-        backendAzureRmKey: 'terraform.tfstate'
-    - task: TerraformTaskV2@2
-      inputs:
-        provider: 'azurerm'
-        command: 'plan'
-        environmentServiceNameAzureRM: 'Azure Pass - Sponsorship(90a5d9e6-2339-480b-a3c4-8cfb8440db35)'
-    - task: TerraformTaskV2@2
-      inputs:
-        provider: 'azurerm'
-        command: 'apply'
-        environmentServiceNameAzureRM: 'Azure Pass - Sponsorship(90a5d9e6-2339-480b-a3c4-8cfb8440db35)'
+steps:
+- task: TerraformInstaller@0
+  inputs:
+    terraformVersion: 'latest'
+- task: TerraformTaskV2@2
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendServiceArm: 'Azure Pass - Sponsorship(90a5d9e6-2339-480b-a3c4-8cfb8440db35)'
+    backendAzureRmResourceGroupName: 'cloud-shell-storage-centralindia'
+    backendAzureRmStorageAccountName: 'csg10032000c8336f24'
+    backendAzureRmContainerName: 'tff'
+    backendAzureRmKey: 'terraform.tfstate'
+- task: TerraformTaskV2@2
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    environmentServiceNameAzureRM: 'Azure Pass - Sponsorship(90a5d9e6-2339-480b-a3c4-8cfb8440db35)'
+- task: TerraformTaskV2@2
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    environmentServiceNameAzureRM: 'Azure Pass - Sponsorship(90a5d9e6-2339-480b-a3c4-8cfb8440db35)'
