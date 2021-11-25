@@ -32,3 +32,23 @@ stages:
           backendAzureRmStorageAccountName: 'csg10032000c8336f24'
           backendAzureRmContainerName: 'tff'
           backendAzureRmKey: 'terraform.tfstate'
+- stage: planTF
+  displayName: Plan Terraform
+  jobs:
+    - job: planTF
+      steps:
+      - task: TerraformTaskV2@2
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          environmentServiceNameAzureRM: 'Azure Pass - Sponsorship(90a5d9e6-2339-480b-a3c4-8cfb8440db35)'
+- stage: applyTF
+  displayName: Apply Terraform
+  jobs:
+    - job: applyTF
+      steps:
+      - task: TerraformTaskV2@2
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          environmentServiceNameAzureRM: 'Azure Pass - Sponsorship(90a5d9e6-2339-480b-a3c4-8cfb8440db35)'
