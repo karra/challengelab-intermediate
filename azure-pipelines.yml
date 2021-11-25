@@ -1,0 +1,41 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: TerraformInstaller@0
+  inputs:
+    terraformVersion: 'latest'
+- task: TerraformTaskV2@2
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendServiceArm: 'Azure Pass - Sponsorship(90a5d9e6-2339-480b-a3c4-8cfb8440db35)'
+    backendAzureRmResourceGroupName: 'cloud-shell-storage-centralindia'
+    backendAzureRmStorageAccountName: 'csg10032000c8336f24'
+    backendAzureRmContainerName: 'tff'
+    backendAzureRmKey: 'terraform.tfstate'
+- task: TerraformTaskV2@2
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    environmentServiceNameAzureRM: 'Azure Pass - Sponsorship(90a5d9e6-2339-480b-a3c4-8cfb8440db35)'
+- task: TerraformTaskV2@2
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    environmentServiceNameAzureRM: 'Azure Pass - Sponsorship(90a5d9e6-2339-480b-a3c4-8cfb8440db35)'
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'Azure Pass - Sponsorship(90a5d9e6-2339-480b-a3c4-8cfb8440db35)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: 'az vm show -d -g 02-intermediate-rg -n intermediate-vm --query publicIps -o tsv > hosts'
