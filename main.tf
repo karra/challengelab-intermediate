@@ -8,7 +8,6 @@ terraform {
     storage_account_name = "csg10032000c8336f24"
     container_name       = "tff"
     key                  = "terraform.tfstate"
-
   }
 }
 resource "azurerm_resource_group" "rg" {
